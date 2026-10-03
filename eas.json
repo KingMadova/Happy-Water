@@ -1,23 +1,24 @@
 {
   "cli": {
-    "version": ">= 5.0.0"
+    "version": ">= 5.0.0",
+    "appVersionSource": "remote"
   },
   "build": {
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "node": "20.18.0"
+      "node": "22.18.0"
     },
     "preview": {
       "distribution": "internal",
       "android": {
         "buildType": "apk"
       },
-      "node": "20.18.0"
+      "node": "22.18.0"
     },
     "production": {
       "autoIncrement": true,
-      "node": "20.18.0"
+      "node": "22.18.0"
     }
   },
   "submit": {
