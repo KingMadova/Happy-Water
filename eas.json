@@ -1,18 +1,29 @@
 {
   "cli": {
-    "version": ">= 24.7.0",
-    "appVersionSource": "remote"
+    "version": ">= 5.0.0"
   },
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "node": "20.18.0",
+      "npm": "10.8.0"
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "node": "20.18.0",
+      "npm": "10.8.0",
+      "env": {
+        "EXPO_NO_DOTENV": "1"
+      }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "node": "20.18.0",
+      "npm": "10.8.0"
     }
   },
   "submit": {
