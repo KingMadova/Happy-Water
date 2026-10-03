@@ -6,24 +6,18 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "node": "20.18.0",
-      "npm": "10.8.0"
+      "node": "20.18.0"
     },
     "preview": {
       "distribution": "internal",
       "android": {
         "buildType": "apk"
       },
-      "node": "20.18.0",
-      "npm": "10.8.0",
-      "env": {
-        "EXPO_NO_DOTENV": "1"
-      }
+      "node": "20.18.0"
     },
     "production": {
       "autoIncrement": true,
-      "node": "20.18.0",
-      "npm": "10.8.0"
+      "node": "20.18.0"
     }
   },
   "submit": {
