@@ -1,56 +1,102 @@
 // app/(tabs)/_layout.tsx
 import { Tabs } from "expo-router";
-import { History, Home, Settings } from "lucide-react-native";
-import { Platform } from "react-native";
+import { Image } from "react-native";
+import { BlurView } from "expo-blur";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { colors, spacing } from "../../src/constants/theme";
+import { colors } from "../../src/constants/theme";
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textSecondary,
-        tabBarStyle: {
-          backgroundColor: colors.card,
-          borderTopWidth: 1,
-          borderTopColor: colors.border,
-          height: Platform.OS === "ios" ? 88 : 64,
-          paddingBottom: Platform.OS === "ios" ? 28 : 8,
-          paddingTop: 8,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.05,
-          shadowRadius: 8,
-          elevation: 5,
-        },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: "600",
-          marginTop: spacing.xs,
-        },
         headerShown: false,
+        tabBarActiveTintColor: colors.textPrimary,
+        tabBarInactiveTintColor: "rgba(255,255,255,0.45)",
+        tabBarStyle: {
+          position: "absolute",
+          borderTopWidth: 0,
+          backgroundColor: "transparent",
+          height: 72 + insets.bottom,
+          paddingBottom: insets.bottom + 8,
+          paddingTop: 8,
+        },
+        tabBarBackground: () => (
+          <BlurView
+            intensity={40}
+            tint="dark"
+            style={{
+              flex: 1,
+              borderTopWidth: 1,
+              borderTopColor: "rgba(255,255,255,0.18)",
+              backgroundColor: "rgba(7,24,47,0.55)",
+            }}
+          />
+        ),
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: "600",
+          marginTop: 2,
+        },
+        tabBarIconStyle: {
+          marginTop: 4,
+        },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: "Accueil",
-          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={require("../../assets/tab-home-3d.png")}
+              style={{
+                width: 28,
+                height: 28,
+                opacity: focused ? 1 : 0.55,
+                tintColor: focused ? "#2DD4BF" : undefined,
+              }}
+              resizeMode="contain"
+            />
+          ),
         }}
       />
       <Tabs.Screen
         name="history"
         options={{
           title: "Historique",
-          tabBarIcon: ({ color, size }) => <History size={size} color={color} />,
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={require("../../assets/tab-history-3d.png")}
+              style={{
+                width: 28,
+                height: 28,
+                opacity: focused ? 1 : 0.55,
+                tintColor: focused ? "#2DD4BF" : undefined,
+              }}
+              resizeMode="contain"
+            />
+          ),
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: "Paramètres",
-          tabBarIcon: ({ color, size }) => <Settings size={size} color={color} />,
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={require("../../assets/tab-settings-3d.png")}
+              style={{
+                width: 28,
+                height: 28,
+                opacity: focused ? 1 : 0.55,
+                tintColor: focused ? "#2DD4BF" : undefined,
+              }}
+              resizeMode="contain"
+            />
+          ),
         }}
       />
     </Tabs>

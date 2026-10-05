@@ -30,6 +30,7 @@ export interface DayLog {
 export interface HydraState {
   // ----- Données persistées -----
   onboardingDone: boolean;
+  resetOnboarding: () => void;
   weightKg: number;
   weatherAutoEnabled: boolean; // toggle "Météo automatique (API)"
   manualMode: ManualWeatherMode; // segmented control (fallback / mode manuel)
@@ -102,6 +103,7 @@ export const useHydrationStore = create<HydraState>()(
       endHour: 22,
       frequencyHours: 2,
       logs: {},
+      resetOnboarding: () => set({ onboardingDone: false }),
 
       // ----- Actions -----
       completeOnboarding: () => set({ onboardingDone: true }),

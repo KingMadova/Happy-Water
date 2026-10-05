@@ -2,9 +2,8 @@
 import { Droplets } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-
 import { AppBackground } from "../../components/AppBackground";
 import { GlassCard } from "../../components/GlassCard";
 import { QuantityChips } from "../../components/QuantityChips";
@@ -24,6 +23,7 @@ export default function HomeScreen() {
   const totalMl = useHydrationStore((s) => selectTodayLog(s).totalMl);
   const goalMl = useHydrationStore(selectDailyGoalMl);
   const addIntake = useHydrationStore((s) => s.addIntake);
+  const insets = useSafeAreaInsets();
 
   const reached = goalMl > 0 && totalMl >= goalMl;
 
@@ -46,7 +46,7 @@ export default function HomeScreen() {
           )}
         </View>
 
-        <View style={styles.bottomBlock}>
+        <View style={[styles.bottomBlock, { paddingBottom: 88 + insets.bottom }]}>
           <QuantityChips selectedQuantity={selectedMl} onSelect={setSelectedMl} />
 
           <Pressable

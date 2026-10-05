@@ -1,12 +1,18 @@
 // app/onboarding.tsx
 import { useRouter } from "expo-router";
-import { ArrowRight, Droplets, MapPin, ThermometerSun } from "lucide-react-native";
+import { ArrowRight, MapPin, ThermometerSun } from "lucide-react-native";
 import { useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Location from "expo-location";
+import { SafeAreaView } from "react-native-safe-area-context";
 
+import { AppBackground } from "../components/AppBackground";
+import { GlassCard } from "../components/GlassCard";
 import { Stepper } from "../components/Stepper";
+import { colors, fontSize, gradients, radius, shadows, spacing } from "../src/constants/theme";
+import { refreshWeather } from "../src/services/weather";
+import { useHydrationStore } from "../src/store/useHydrationStore";
 import {
   COEFFICIENT_CHAUD,
   COEFFICIENT_FRAIS,
@@ -15,9 +21,6 @@ import {
   WEIGHT_MAX,
   WEIGHT_MIN,
 } from "../src/utils/hydration";
-import { colors, fontSize, gradients, radius, spacing } from "../src/constants/theme";
-import { useHydrationStore } from "../src/store/useHydrationStore";
-import { refreshWeather } from "../src/services/weather";
 
 export default function Onboarding() {
   const router = useRouter();
@@ -39,9 +42,7 @@ export default function Onboarding() {
       const { status } = await Location.requestForegroundPermissionsAsync();
       const granted = status === "granted";
       setGpsGranted(granted);
-      if (granted) {
-        await refreshWeather();
-      }
+      if (granted) await refreshWeather();
     } catch {
       setGpsGranted(false);
     } finally {
@@ -54,55 +55,60 @@ export default function Onboarding() {
     router.replace("/(tabs)");
   };
 
-  if (step === 1) return <WelcomeStep onNext={() => setStep(2)} />;
-  if (step === 2)
-    return (
-      <ProfileStep
-        weightKg={weightKg}
-        setWeightKg={setWeightKg}
-        goalFrais={goalFrais}
-        goalChaud={goalChaud}
-        onNext={() => setStep(3)}
-      />
-    );
   return (
-    <WeatherStep
-      gpsLoading={gpsLoading}
-      gpsGranted={gpsGranted}
-      requestGps={requestGps}
-      onFinish={finishOnboarding}
-    />
+    <AppBackground>
+      <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
+        <StepDots step={step} />
+        {step === 1 && <WelcomeStep onNext={() => setStep(2)} />}
+        {step === 2 && (
+          <ProfileStep
+            weightKg={weightKg}
+            setWeightKg={setWeightKg}
+            goalFrais={goalFrais}
+            goalChaud={goalChaud}
+            onNext={() => setStep(3)}
+          />
+        )}
+        {step === 3 && (
+          <WeatherStep gpsLoading={gpsLoading} gpsGranted={gpsGranted} requestGps={requestGps} onFinish={finishOnboarding} />
+        )}
+      </SafeAreaView>
+    </AppBackground>
   );
 }
 
-// ============================================
-// ÉTAPE 1 : Bienvenue
-// ============================================
+// ---------- Indicateur d'étapes ----------
+function StepDots({ step }: { step: number }) {
+  return (
+    <View style={styles.dots}>
+      {[1, 2, 3].map((i) => (
+        <View key={i} style={[styles.dot, i === step && styles.dotActive, i < step && styles.dotDone]} />
+      ))}
+    </View>
+  );
+}
+
+// ---------- ÉTAPE 1 : Bienvenue ----------
 function WelcomeStep({ onNext }: { onNext: () => void }) {
   return (
-    <LinearGradient colors={[...gradients.background]} style={styles.container}>
+    <>
       <View style={styles.content}>
-        <View style={styles.iconCircle}>
-          <Droplets size={80} color={colors.primary} strokeWidth={1.5} />
+        <View style={styles.dropHalo}>
+          <Image source={require("../assets/drop-3d.png")} style={styles.dropImage} resizeMode="contain" />
         </View>
         <Text style={styles.title}>Hydra</Text>
-        <Text style={styles.subtitle}>Votre rappel d'eau quotidien, personnalisé et intelligent.</Text>
+        <Text style={styles.subtitle}>
+          Votre rappel d'eau quotidien,{"\n"}personnalisé et intelligent.
+        </Text>
       </View>
       <View style={styles.footer}>
-        <Pressable onPress={onNext} style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}>
-          <LinearGradient colors={[...gradients.primary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.ctaGradient}>
-            <Text style={styles.ctaText}>Commencer</Text>
-            <ArrowRight size={20} color={colors.textOnPrimary} />
-          </LinearGradient>
-        </Pressable>
+        <CtaButton label="Commencer" onPress={onNext} />
       </View>
-    </LinearGradient>
+    </>
   );
 }
 
-// ============================================
-// ÉTAPE 2 : Profil (poids + formule)
-// ============================================
+// ---------- ÉTAPE 2 : Profil ----------
 function ProfileStep({
   weightKg,
   setWeightKg,
@@ -117,58 +123,41 @@ function ProfileStep({
   onNext: () => void;
 }) {
   return (
-    <LinearGradient colors={[...gradients.background]} style={styles.container}>
+    <>
       <View style={styles.content}>
         <Text style={styles.stepTitle}>Votre profil</Text>
         <Text style={styles.stepSubtitle}>Pour personnaliser votre objectif quotidien.</Text>
 
-        <View style={styles.card}>
+        <GlassCard style={styles.card}>
           <Text style={styles.cardLabel}>Votre poids</Text>
-          <Stepper
-            value={weightKg}
-            onChange={setWeightKg}
-            min={WEIGHT_MIN}
-            max={WEIGHT_MAX}
-            step={1}
-            unit="kg"
-          />
-        </View>
+          <Stepper value={weightKg} onChange={setWeightKg} min={WEIGHT_MIN} max={WEIGHT_MAX} step={1} unit="kg" />
+        </GlassCard>
 
-        <View style={styles.card}>
+        <GlassCard style={styles.card} strong>
           <Text style={styles.cardLabel}>💡 La formule</Text>
           <Text style={styles.formulaText}>
             <Text style={styles.formulaBold}>{weightKg} kg</Text> ×{" "}
             <Text style={styles.formulaBold}>{COEFFICIENT_FRAIS} ml</Text> ={" "}
             <Text style={styles.formulaResult}>{formatLiters(goalFrais)}/jour</Text>
           </Text>
-          <Text style={styles.formulaTextSmall}>(temps frais)</Text>
-
+          <Text style={styles.formulaSmall}>(temps frais)</Text>
           <View style={styles.divider} />
-
           <Text style={styles.formulaText}>
             <Text style={styles.formulaBold}>{weightKg} kg</Text> ×{" "}
             <Text style={styles.formulaBold}>{COEFFICIENT_CHAUD} ml</Text> ={" "}
             <Text style={styles.formulaResult}>{formatLiters(goalChaud)}/jour</Text>
           </Text>
-          <Text style={styles.formulaTextSmall}>(temps chaud)</Text>
-        </View>
+          <Text style={styles.formulaSmall}>(temps chaud)</Text>
+        </GlassCard>
       </View>
-
       <View style={styles.footer}>
-        <Pressable onPress={onNext} style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}>
-          <LinearGradient colors={[...gradients.primary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.ctaGradient}>
-            <Text style={styles.ctaText}>Continuer</Text>
-            <ArrowRight size={20} color={colors.textOnPrimary} />
-          </LinearGradient>
-        </Pressable>
+        <CtaButton label="Continuer" onPress={onNext} />
       </View>
-    </LinearGradient>
+    </>
   );
 }
 
-// ============================================
-// ÉTAPE 3 : Météo (GPS + toggle auto)
-// ============================================
+// ---------- ÉTAPE 3 : Météo ----------
 function WeatherStep({
   gpsLoading,
   gpsGranted,
@@ -181,207 +170,122 @@ function WeatherStep({
   onFinish: () => void;
 }) {
   return (
-    <LinearGradient colors={[...gradients.background]} style={styles.container}>
+    <>
       <View style={styles.content}>
         <Text style={styles.stepTitle}>Météo en temps réel</Text>
-        <Text style={styles.stepSubtitle}>Ajustez automatiquement votre objectif selon la température.</Text>
+        <Text style={styles.stepSubtitle}>Votre objectif s'ajuste à la température.</Text>
 
-        <View style={styles.card}>
-          <ThermometerSun size={48} color={colors.primary} />
+        <GlassCard style={styles.card} strong>
+          <ThermometerSun size={48} color={colors.glow} />
           <Text style={styles.weatherTitle}>S'il fait chaud (+27°C)</Text>
           <Text style={styles.weatherDesc}>
-            Votre besoin en eau augmente. Hydra ajuste automatiquement le coefficient à{" "}
-            <Text style={styles.formulaBold}>35 ml/kg</Text>.
+            Votre besoin en eau augmente. Hydra passe automatiquement au coefficient{" "}
+            <Text style={styles.formulaBold}>{COEFFICIENT_CHAUD} ml/kg</Text>.
           </Text>
-        </View>
+        </GlassCard>
 
         <Pressable
           onPress={requestGps}
           disabled={gpsLoading}
-          style={({ pressed }) => [styles.gpsButton, pressed && styles.gpsButtonPressed, gpsLoading && styles.gpsButtonDisabled]}
+          style={({ pressed }) => [styles.gpsButton, pressed && styles.gpsPressed, gpsLoading && styles.gpsDisabled]}
         >
           {gpsLoading ? (
             <ActivityIndicator color={colors.textOnPrimary} />
           ) : (
             <>
               <MapPin size={20} color={colors.textOnPrimary} />
-              <Text style={styles.gpsButtonText}>
-                {gpsGranted ? "✓ Localisation activée" : "Activer la localisation"}
-              </Text>
+              <Text style={styles.gpsText}>{gpsGranted ? "✓ Localisation activée" : "Activer la localisation"}</Text>
             </>
           )}
         </Pressable>
 
-        {gpsGranted && (
-          <Text style={styles.gpsHint}>
-            Parfait ! Hydra récupérera la météo locale toutes les 3h.
-          </Text>
-        )}
+        {gpsGranted && <Text style={styles.gpsHint}>Parfait ! Hydra récupérera la météo locale toutes les 3 h.</Text>}
       </View>
-
       <View style={styles.footer}>
-        <Pressable onPress={onFinish} style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}>
-          <LinearGradient colors={[...gradients.primary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.ctaGradient}>
-            <Text style={styles.ctaText}>C'est parti !</Text>
-            <ArrowRight size={20} color={colors.textOnPrimary} />
-          </LinearGradient>
-        </Pressable>
+        <CtaButton label="C'est parti !" onPress={onFinish} />
       </View>
-    </LinearGradient>
+    </>
   );
 }
 
-// ============================================
-// Styles
-// ============================================
+// ---------- CTA réutilisable ----------
+function CtaButton({ label, onPress }: { label: string; onPress: () => void }) {
+  return (
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}>
+      <LinearGradient colors={["#4A90D9", "#2DD4BF"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.ctaGradient}>
+        <Text style={styles.ctaText}>{label}</Text>
+        <ArrowRight size={20} color={colors.textOnPrimary} />
+      </LinearGradient>
+    </Pressable>
+  );
+}
+
+// ---------- Styles ----------
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl * 2,
-    alignItems: "center",
-  },
-  footer: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.xl,
-  },
-  iconCircle: {
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    backgroundColor: colors.card,
+  safe: { flex: 1 },
+  dots: { flexDirection: "row", justifyContent: "center", gap: spacing.sm, paddingTop: spacing.lg },
+  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: "rgba(255,255,255,0.25)" },
+  dotDone: { backgroundColor: "rgba(255,255,255,0.5)" },
+  dotActive: { width: 24, backgroundColor: colors.accent },
+  content: { flex: 1, paddingHorizontal: spacing.lg, paddingTop: spacing.xl, alignItems: "center" },
+  footer: { paddingHorizontal: spacing.lg, paddingBottom: spacing.lg },
+  dropHalo: {
+    width: 200,
+    height: 200,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: spacing.xl,
+    marginBottom: spacing.lg,
+    ...shadows.glow,
+    borderRadius: 100,
   },
+  dropImage: { width: 190, height: 190 },
   title: {
-    fontSize: fontSize.xxl * 1.2,
+    fontSize: fontSize.xxl,
     fontWeight: "800",
     color: colors.textPrimary,
     marginBottom: spacing.sm,
+    textShadowColor: "rgba(0,0,0,0.4)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
   },
-  subtitle: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    textAlign: "center",
-    lineHeight: 24,
-  },
-  stepTitle: {
-    fontSize: fontSize.xl,
-    fontWeight: "700",
-    color: colors.textPrimary,
-    marginBottom: spacing.xs,
-    textAlign: "center",
-  },
-  stepSubtitle: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    textAlign: "center",
-    marginBottom: spacing.xl,
-  },
-  card: {
-    width: "100%",
-    backgroundColor: colors.card,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    marginBottom: spacing.md,
-    alignItems: "center",
-  },
+  subtitle: { fontSize: fontSize.md, color: colors.textSecondary, textAlign: "center", lineHeight: 24 },
+  stepTitle: { fontSize: fontSize.xl, fontWeight: "800", color: colors.textPrimary, textAlign: "center", marginBottom: spacing.xs },
+  stepSubtitle: { fontSize: fontSize.md, color: colors.textSecondary, textAlign: "center", marginBottom: spacing.lg },
+  card: { width: "100%", padding: spacing.lg, marginBottom: spacing.md, alignItems: "center" },
   cardLabel: {
     fontSize: fontSize.sm,
-    fontWeight: "600",
+    fontWeight: "700",
     color: colors.textSecondary,
     marginBottom: spacing.md,
     textTransform: "uppercase",
     letterSpacing: 1,
   },
-  formulaText: {
-    fontSize: fontSize.md,
-    color: colors.textPrimary,
-    textAlign: "center",
-    marginBottom: spacing.xs,
-  },
-  formulaTextSmall: {
-    fontSize: fontSize.xs,
-    color: colors.textSecondary,
-    marginBottom: spacing.md,
-  },
-  formulaBold: {
-    fontWeight: "700",
-  },
-  formulaResult: {
-    fontWeight: "700",
-    color: colors.primary,
-  },
-  divider: {
-    width: "100%",
-    height: 1,
-    backgroundColor: colors.border,
-    marginVertical: spacing.md,
-  },
-  weatherTitle: {
-    fontSize: fontSize.lg,
-    fontWeight: "700",
-    color: colors.textPrimary,
-    marginTop: spacing.md,
-    marginBottom: spacing.sm,
-    textAlign: "center",
-  },
-  weatherDesc: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    textAlign: "center",
-    lineHeight: 22,
-  },
+  formulaText: { fontSize: fontSize.md, color: colors.textPrimary, textAlign: "center", marginBottom: spacing.xs },
+  formulaSmall: { fontSize: fontSize.xs, color: colors.textSecondary, marginBottom: spacing.md },
+  formulaBold: { fontWeight: "700" },
+  formulaResult: { fontWeight: "800", color: colors.glow },
+  divider: { width: "100%", height: 1, backgroundColor: "rgba(255,255,255,0.15)", marginVertical: spacing.md },
+  weatherTitle: { fontSize: fontSize.lg, fontWeight: "700", color: colors.textPrimary, marginTop: spacing.md, marginBottom: spacing.sm, textAlign: "center" },
+  weatherDesc: { fontSize: fontSize.sm, color: colors.textSecondary, textAlign: "center", lineHeight: 22 },
   gpsButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.primary,
+    gap: spacing.sm,
+    backgroundColor: "rgba(255,255,255,0.12)",
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
     borderRadius: radius.pill,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
     marginTop: spacing.md,
-    gap: spacing.sm,
   },
-  gpsButtonPressed: {
-    opacity: 0.8,
-  },
-  gpsButtonDisabled: {
-    opacity: 0.6,
-  },
-  gpsButtonText: {
-    color: colors.textOnPrimary,
-    fontWeight: "600",
-    fontSize: fontSize.md,
-  },
-  gpsHint: {
-    fontSize: fontSize.sm,
-    color: colors.success,
-    textAlign: "center",
-    marginTop: spacing.md,
-    fontWeight: "500",
-  },
-  cta: {
-    borderRadius: radius.pill,
-    overflow: "hidden",
-  },
-  ctaPressed: {
-    opacity: 0.9,
-  },
-  ctaGradient: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: spacing.md,
-    gap: spacing.sm,
-  },
-  ctaText: {
-    color: colors.textOnPrimary,
-    fontSize: fontSize.lg,
-    fontWeight: "700",
-  },
+  gpsPressed: { opacity: 0.8 },
+  gpsDisabled: { opacity: 0.6 },
+  gpsText: { color: colors.textPrimary, fontWeight: "700", fontSize: fontSize.md },
+  gpsHint: { fontSize: fontSize.sm, color: colors.success, textAlign: "center", marginTop: spacing.md, fontWeight: "600" },
+  cta: { borderRadius: radius.pill, overflow: "hidden", ...shadows.glow },
+  ctaPressed: { opacity: 0.9 },
+  ctaGradient: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: spacing.md, gap: spacing.sm },
+  ctaText: { color: colors.textOnPrimary, fontSize: fontSize.lg, fontWeight: "800" },
 });

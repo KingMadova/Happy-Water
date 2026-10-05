@@ -108,7 +108,7 @@ export function WaterRing({ currentMl, goalMl, size = 260, strokeWidth = 20 }: W
         <Defs>
           {/* Dégradé de l'anneau verre */}
           <LinearGradient id="ringGlass" x1="0%" y1="0%" x2="100%" y2="100%">
-            <Stop offset="0%" stopColor="rgba(255,255,255,0.55)" />
+            <Stop offset="0%" stopColor="rgba(255,255,255,0.35)" />
             <Stop offset="100%" stopColor="rgba(255,255,255,0.12)" />
           </LinearGradient>
           {/* Eau volumétrique */}

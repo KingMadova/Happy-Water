@@ -2,9 +2,11 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { Droplets, Trophy } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { colors, fontSize, gradients, radius, spacing } from "../../src/constants/theme";
+import { AppBackground } from "../../components/AppBackground";
+import { GlassCard } from "../../components/GlassCard";
+import { colors, fontSize, radius, spacing } from "../../src/constants/theme";
 import {
   selectDailyGoalMl,
   useHydrationStore,
@@ -43,6 +45,7 @@ function buildDays(logs: Record<string, DayLog>, fallbackGoalMl: number): DayRow
 }
 
 export default function HistoryScreen() {
+  const insets = useSafeAreaInsets();
   const logs = useHydrationStore((s) => s.logs);
   const fallbackGoalMl = useHydrationStore(selectDailyGoalMl);
 
@@ -52,13 +55,16 @@ export default function HistoryScreen() {
   const hasData = rows.some((r) => r.totalMl > 0);
 
   return (
-    <LinearGradient colors={[...gradients.background]} style={styles.container}>
+    <AppBackground>
       <SafeAreaView style={styles.safe} edges={["top"]}>
-        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={[styles.scroll, { paddingBottom: 100 + insets.bottom }]}
+          showsVerticalScrollIndicator={false}
+        >
           <Text style={styles.screenTitle}>Historique</Text>
 
           {/* ---------- RÉCAP 7 JOURS ---------- */}
-          <View style={styles.summaryCard}>
+          <GlassCard style={styles.summaryCard} strong>
             <View style={styles.summaryItem}>
               <Trophy size={22} color={colors.warning} />
               <Text style={styles.summaryValue}>
@@ -68,23 +74,24 @@ export default function HistoryScreen() {
             </View>
             <View style={styles.summaryDivider} />
             <View style={styles.summaryItem}>
-              <Droplets size={22} color={colors.primary} />
+              <Droplets size={22} color={colors.glow} />
               <Text style={styles.summaryValue}>{formatLiters(totalWeekMl)}</Text>
               <Text style={styles.summaryLabel}>bus sur 7 jours</Text>
             </View>
-          </View>
+          </GlassCard>
 
+          {/* ---------- ÉTAT VIDE ---------- */}
           {!hasData && (
-            <View style={styles.emptyCard}>
-              <Droplets size={36} color={colors.textSecondary} />
+            <GlassCard style={styles.emptyCard}>
+              <Droplets size={40} color={colors.textTertiary} />
               <Text style={styles.emptyText}>
                 Aucune donnée pour l'instant.{"\n"}Bois ton premier verre d'eau depuis l'accueil !
               </Text>
-            </View>
+            </GlassCard>
           )}
 
           {/* ---------- BARRES PAR JOUR ---------- */}
-          <View style={styles.daysCard}>
+          <GlassCard style={styles.daysCard} strong>
             {rows.map((row) => {
               const progress = row.goalMl > 0 ? Math.min(row.totalMl / row.goalMl, 1) : 0;
               return (
@@ -97,65 +104,48 @@ export default function HistoryScreen() {
                     </Text>
                   </View>
                   <View style={styles.barTrack}>
-                    <View
-                      style={[
-                        styles.barFill,
-                        row.reached && styles.barFillReached,
-                        { width: `${progress * 100}%` },
-                      ]}
-                    />
+                    {progress > 0 && (
+                      <LinearGradient
+                        colors={row.reached ? ["#34D399", "#2DD4BF"] : ["#4A90D9", "#2DD4BF"]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={[styles.barFill, { width: `${progress * 100}%` }]}
+                      />
+                    )}
                   </View>
                 </View>
               );
             })}
-          </View>
+          </GlassCard>
         </ScrollView>
       </SafeAreaView>
-    </LinearGradient>
+    </AppBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
   safe: { flex: 1 },
-  scroll: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xl },
+  scroll: { paddingHorizontal: spacing.lg, paddingTop: spacing.md },
   screenTitle: {
     fontSize: fontSize.xl,
     fontWeight: "800",
     color: colors.textPrimary,
     textAlign: "center",
-    marginVertical: spacing.lg,
+    marginBottom: spacing.lg,
+    textShadowColor: "rgba(0,0,0,0.4)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
   },
   summaryCard: {
     flexDirection: "row",
-    backgroundColor: colors.card,
-    borderRadius: radius.lg,
     padding: spacing.lg,
     marginBottom: spacing.md,
   },
-  summaryItem: {
-    flex: 1,
-    alignItems: "center",
-    gap: spacing.xs,
-  },
-  summaryDivider: {
-    width: 1,
-    backgroundColor: colors.border,
-    marginHorizontal: spacing.md,
-  },
-  summaryValue: {
-    fontSize: fontSize.xl,
-    fontWeight: "800",
-    color: colors.textPrimary,
-  },
-  summaryLabel: {
-    fontSize: fontSize.xs,
-    color: colors.textSecondary,
-    textAlign: "center",
-  },
+  summaryItem: { flex: 1, alignItems: "center", gap: spacing.xs },
+  summaryDivider: { width: 1, backgroundColor: "rgba(255,255,255,0.15)", marginHorizontal: spacing.md },
+  summaryValue: { fontSize: fontSize.xl, fontWeight: "800", color: colors.textPrimary },
+  summaryLabel: { fontSize: fontSize.xs, color: colors.textSecondary, textAlign: "center" },
   emptyCard: {
-    backgroundColor: colors.card,
-    borderRadius: radius.lg,
     padding: spacing.xl,
     alignItems: "center",
     gap: spacing.md,
@@ -167,45 +157,25 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 22,
   },
-  daysCard: {
-    backgroundColor: colors.card,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
+  daysCard: { padding: spacing.lg, gap: spacing.md },
   dayRow: { gap: spacing.xs },
-  dayHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
+  dayHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   dayLabel: {
     fontSize: fontSize.sm,
-    fontWeight: "600",
+    fontWeight: "700",
     color: colors.textPrimary,
     textTransform: "capitalize",
   },
-  dayValue: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    fontWeight: "500",
-  },
-  dayValueReached: {
-    color: colors.success,
-    fontWeight: "700",
-  },
+  dayValue: { fontSize: fontSize.sm, color: colors.textSecondary, fontWeight: "600" },
+  dayValueReached: { color: colors.success, fontWeight: "800" },
   barTrack: {
     height: 10,
     borderRadius: radius.pill,
-    backgroundColor: colors.chipBackground,
+    backgroundColor: "rgba(255,255,255,0.12)",
     overflow: "hidden",
   },
   barFill: {
     height: "100%",
     borderRadius: radius.pill,
-    backgroundColor: colors.primary,
-  },
-  barFillReached: {
-    backgroundColor: colors.success,
   },
 });

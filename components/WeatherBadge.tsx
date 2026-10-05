@@ -1,14 +1,15 @@
 // components/WeatherBadge.tsx
+import { BlurView } from "expo-blur";
 import { CloudSun, Thermometer } from "lucide-react-native";
 import { StyleSheet, Text, View } from "react-native";
 
 import { colors, fontSize, radius, spacing } from "../src/constants/theme";
+import { isHot } from "../src/utils/hydration";
 import {
-  COEFFICIENT_CHAUD,
-  COEFFICIENT_FRAIS,
-  isHot,
-} from "../src/utils/hydration";
-import { useHydrationStore, selectCoefficient, selectIsWeatherLive } from "../src/store/useHydrationStore";
+  useHydrationStore,
+  selectCoefficient,
+  selectIsWeatherLive,
+} from "../src/store/useHydrationStore";
 
 export function WeatherBadge() {
   const temperatureC = useHydrationStore((s) => s.temperatureC);
@@ -19,20 +20,19 @@ export function WeatherBadge() {
   const hot = isHot(temperatureC, heatThresholdC);
 
   if (!isLive || temperatureC === null) {
-    // Mode manuel ou météo indisponible : pas de badge live
     return null;
   }
 
   const Icon = hot ? CloudSun : Thermometer;
-  const iconColor = hot ? colors.warning : colors.primary;
+  const iconColor = hot ? colors.warning : colors.glow;
 
   return (
-    <View style={styles.container}>
+    <BlurView intensity={24} tint="dark" style={styles.container}>
       <Icon size={16} color={iconColor} />
       <Text style={styles.text}>
-        {Math.round(temperatureC)}°C · coefficient ×{coefficient} ml/kg
+        {Math.round(temperatureC)}°C · ×{coefficient} ml/kg
       </Text>
-    </View>
+    </BlurView>
   );
 }
 
@@ -40,15 +40,18 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.card,
     borderRadius: radius.pill,
-    paddingVertical: spacing.xs,
+    paddingVertical: spacing.xs + 2,
     paddingHorizontal: spacing.md,
-    gap: spacing.xs,
+    gap: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    backgroundColor: colors.glassFill,
+    overflow: "hidden",
   },
   text: {
     fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    fontWeight: "500",
+    color: colors.textPrimary,
+    fontWeight: "600",
   },
 });

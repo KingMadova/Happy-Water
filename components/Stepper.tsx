@@ -102,17 +102,17 @@ const styles = StyleSheet.create({
     width: BUTTON_SIZE,
     height: BUTTON_SIZE,
     borderRadius: radius.pill,
-    backgroundColor: colors.chipBackground,
+    backgroundColor: "rgba(255,255,255,0.10)",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: "rgba(255,255,255,0.22)",
   },
   buttonPressed: {
-    backgroundColor: colors.border,
+    backgroundColor: "rgba(255,255,255,0.18)",
   },
   buttonDisabled: {
-    opacity: 0.4,
+    opacity: 0.35,
   },
   valueContainer: {
     flexDirection: "row",
@@ -123,11 +123,11 @@ const styles = StyleSheet.create({
   valueText: {
     fontSize: fontSize.xxl,
     fontWeight: "700",
-    color: colors.textPrimary,
+    color: "#FFFFFF",
   },
   unitText: {
     fontSize: fontSize.lg,
     fontWeight: "500",
-    color: colors.textSecondary,
+    color: "rgba(255,255,255,0.65)",
   },
 });
