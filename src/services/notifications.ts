@@ -1,5 +1,6 @@
 // src/services/notifications.ts
 import { Platform } from "react-native";
+import Constants from "expo-constants";
 import type { NotificationContentInput, NotificationResponse } from "expo-notifications";
 
 import {
@@ -19,14 +20,18 @@ type NotificationsModule = typeof import("expo-notifications");
 
 let cachedModule: NotificationsModule | null | undefined;
 
+// Détection Expo Go : ne pas charger expo-notifications du tout
+const isExpoGo = Constants.appOwnership === "expo";
+
 async function loadNotifications(): Promise<NotificationsModule | null> {
+  if (isExpoGo) {
+    cachedModule = null;
+    return null;
+  }
   if (cachedModule !== undefined) return cachedModule;
   try {
     const mod = await import("expo-notifications");
     if (!mod || typeof mod.scheduleNotificationAsync !== "function") {
-      console.warn(
-        "[Hydra] Notifications désactivées : Expo Go (SDK 53+) ne supporte pas expo-notifications. Utilisez un development build."
-      );
       cachedModule = null;
     } else {
       cachedModule = mod;
