@@ -14,7 +14,7 @@ export default function Index() {
   // Petit écran de chargement pendant que Zustand lit AsyncStorage
   if (!hasHydrated) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.backgroundStart }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.bgDeep }}>
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );

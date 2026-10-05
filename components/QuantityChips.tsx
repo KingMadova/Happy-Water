@@ -1,45 +1,38 @@
 // components/QuantityChips.tsx
-import { StyleSheet, Text, View, Pressable } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { colors, radius, spacing, fontSize } from "../src/constants/theme";
-
-export type QuantityMl = 100 | 250 | 500;
+import { colors, fontSize, radius, spacing } from "../src/constants/theme";
 
 interface QuantityChipsProps {
-  selectedQuantity: QuantityMl;
-  onSelect: (ml: QuantityMl) => void;
+  selectedQuantity: number;
+  onSelect: (quantity: number) => void;
   disabled?: boolean;
 }
 
-export function QuantityChips({ selectedQuantity, onSelect, disabled = false }: QuantityChipsProps) {
-  const options: QuantityMl[] = [100, 250, 500];
+const QUANTITIES = [100, 250, 500];
 
+export function QuantityChips({ selectedQuantity, onSelect, disabled = false }: QuantityChipsProps) {
   return (
     <View style={styles.container}>
-      {options.map((ml) => (
-        <Pressable
-          key={ml}
-          onPress={() => !disabled && onSelect(ml)}
-          disabled={disabled}
-          style={({ pressed }) => [
-            styles.chip,
-            selectedQuantity === ml && styles.chipSelected,
-            pressed && !disabled && styles.chipPressed,
-            disabled && styles.chipDisabled,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel={`${ml} ml`}
-          accessibilityState={{ selected: selectedQuantity === ml }}
-        >
-          <Text style={[
-            styles.chipText,
-            selectedQuantity === ml && styles.chipTextSelected,
-            disabled && styles.chipTextDisabled,
-          ]}>
-            {ml} ml
-          </Text>
-        </Pressable>
-      ))}
+      {QUANTITIES.map((qty) => {
+        const isActive = selectedQuantity === qty;
+        return (
+          <Pressable
+            key={qty}
+            onPress={() => onSelect(qty)}
+            disabled={disabled}
+            style={({ pressed }) => [
+              styles.chip,
+              isActive && styles.chipActive,
+              pressed && styles.chipPressed,
+            ]}
+          >
+            <Text style={[styles.chipText, isActive && styles.chipTextActive]}>
+              {qty} ml
+            </Text>
+          </Pressable>
+        );
+      })}
     </View>
   );
 }
@@ -47,39 +40,31 @@ export function QuantityChips({ selectedQuantity, onSelect, disabled = false }: 
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    gap: spacing.md,
     justifyContent: "center",
+    gap: spacing.md,
+    flexWrap: "wrap",
   },
   chip: {
-    backgroundColor: colors.chipBackground,
-    borderRadius: radius.pill,
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.sm + 2,
     paddingHorizontal: spacing.lg,
-    borderWidth: 2,
+    borderRadius: radius.pill,
+    backgroundColor: colors.chipBackground,
+    borderWidth: 1,
     borderColor: colors.border,
-    minWidth: 80,
-    alignItems: "center",
   },
-  chipSelected: {
+  chipActive: {
+    backgroundColor: colors.primary,
     borderColor: colors.primary,
-    backgroundColor: "rgba(74, 144, 217, 0.1)",
   },
   chipPressed: {
     opacity: 0.8,
   },
-  chipDisabled: {
-    opacity: 0.4,
-  },
   chipText: {
     fontSize: fontSize.md,
     fontWeight: "600",
-    color: colors.textPrimary,
-  },
-  chipTextSelected: {
-    color: colors.primary,
-    fontWeight: "700",
-  },
-  chipTextDisabled: {
     color: colors.textSecondary,
+  },
+  chipTextActive: {
+    color: colors.textOnPrimary,
   },
 });

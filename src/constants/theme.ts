@@ -1,29 +1,53 @@
+// src/constants/theme.ts
+
 export const colors = {
-  backgroundStart: "#EAF6FB",
-  backgroundEnd: "#DFF7F4",
-  card: "#FFFFFF",
+  // --- Fond "nuit aquatique" ---
+  bgDeep: "#07182F",
+  bgMid: "#0E3A5E",
+  bgTop: "#0B2A4A",
+
+  // --- Accents ---
   primary: "#4A90D9",
   accent: "#2DD4BF",
-  textPrimary: "#0F2A43",
-  textSecondary: "#5B7A94",
+  glow: "#5EEAD4",
+
+  // --- Texte (clair sur fond sombre) ---
+  textPrimary: "#FFFFFF",
+  textSecondary: "rgba(255,255,255,0.62)",
+  textTertiary: "rgba(255,255,255,0.40)",
+
+  // --- Glassmorphism ---
+  glassFill: "rgba(255,255,255,0.10)",
+  glassFillStrong: "rgba(255,255,255,0.16)",
+  glassBorder: "rgba(255,255,255,0.22)",
+  glassBorderStrong: "rgba(255,255,255,0.35)",
+
+  // --- Sémantique ---
+  success: "#34D399",
+  warning: "#FBBF24",
+  danger: "#F87171",
+
+  // --- Héritage (compat composants existants) ---
+  card: "rgba(255,255,255,0.10)",
+  chipBackground: "rgba(255,255,255,0.10)",
+  border: "rgba(255,255,255,0.18)",
   textOnPrimary: "#FFFFFF",
-  success: "#34C77B",
-  warning: "#F5B841",
-  chipBackground: "#F2F7FB",
-  border: "#E3EEF5",
 } as const;
 
 export const gradients = {
-  /** CTA principal + anneau de progression */
+  /** CTA principal + anneau */
   primary: ["#4A90D9", "#2DD4BF"] as const,
-  /** Fond d'écran global */
-  background: ["#EAF6FB", "#DFF7F4"] as const,
+  /** Fond global nuit aquatique */
+  background: ["#07182F", "#0E3A5E", "#0B2A4A"] as const,
+  /** Eau volumétrique */
+  water: ["#5EEAD4", "#2563EB"] as const,
 } as const;
 
 export const radius = {
-  sm: 12,
-  md: 16,
-  lg: 24,
+  sm: 14,
+  md: 20,
+  lg: 28,
+  xl: 36,
   pill: 999,
 } as const;
 
@@ -33,13 +57,6 @@ export const spacing = {
   md: 16,
   lg: 24,
   xl: 32,
-  half: 2,
-  one: 4,
-  two: 8,
-  three: 12,
-  four: 16,
-  five: 20,
-  six: 24,
 } as const;
 
 export const fontSize = {
@@ -51,52 +68,20 @@ export const fontSize = {
   xxl: 40,
 } as const;
 
+/** Ombres adaptées au fond sombre (plus profondes, halo cyan subtil) */
 export const shadows = {
   card: {
-    shadowColor: "#0F2A43",
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
+    shadowColor: "#000000",
+    shadowOpacity: 0.35,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 10,
+  },
+  glow: {
+    shadowColor: "#2DD4BF",
+    shadowOpacity: 0.45,
+    shadowRadius: 28,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 12,
   },
 } as const;
-
-// --- Compatibility exports for existing components ---
-export const Colors = {
-  light: {
-    text: "#0F2A43",
-    background: "#EAF6FB",
-    backgroundElement: "#DFF7F4",
-    backgroundSelected: "#D0E8F2",
-    textSecondary: "#5B7A94",
-    primary: "#4A90D9",
-    border: "#E3EEF5",
-    card: "#FFFFFF",
-    notification: "#F5B841",
-  },
-  dark: {
-    text: "#FFFFFF",
-    background: "#0F2A43",
-    backgroundElement: "#1A3A5C",
-    backgroundSelected: "#2A4A6A",
-    textSecondary: "#8FA8C0",
-    primary: "#5AA0E0",
-    border: "#2A4A6A",
-    card: "#1A3A5C",
-    notification: "#F5B841",
-  },
-} as const;
-
-export type ThemeColor = keyof typeof Colors.light | 'backgroundSelected';
-
-export const Fonts = {
-  regular: "System",
-  medium: "System",
-  bold: "System",
-  mono: "monospace",
-} as const;
-
-export const BottomTabInset = 44;
-export const MaxContentWidth = 680;
-
-export const Spacing = spacing;

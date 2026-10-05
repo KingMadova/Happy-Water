@@ -1,14 +1,16 @@
 // app/(tabs)/index.tsx
-import { LinearGradient } from "expo-linear-gradient";
 import { Droplets } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
 
-import { QuantityChips, QuantityMl } from "../../components/QuantityChips";
+import { AppBackground } from "../../components/AppBackground";
+import { GlassCard } from "../../components/GlassCard";
+import { QuantityChips } from "../../components/QuantityChips";
 import { WaterRing } from "../../components/WaterRing";
 import { WeatherBadge } from "../../components/WeatherBadge";
-import { colors, fontSize, gradients, radius, spacing } from "../../src/constants/theme";
+import { colors, fontSize, gradients, radius, shadows, spacing } from "../../src/constants/theme";
 import {
   selectDailyGoalMl,
   selectTodayLog,
@@ -17,7 +19,7 @@ import {
 import { formatDayFr } from "../../src/utils/hydration";
 
 export default function HomeScreen() {
-  const [selectedMl, setSelectedMl] = useState<QuantityMl>(250);
+  const [selectedMl, setSelectedMl] = useState(250);
 
   const totalMl = useHydrationStore((s) => selectTodayLog(s).totalMl);
   const goalMl = useHydrationStore(selectDailyGoalMl);
@@ -26,7 +28,7 @@ export default function HomeScreen() {
   const reached = goalMl > 0 && totalMl >= goalMl;
 
   return (
-    <LinearGradient colors={[...gradients.background]} style={styles.container}>
+    <AppBackground>
       <SafeAreaView style={styles.safe} edges={["top"]}>
         <Text style={styles.dateText}>{formatDayFr()}</Text>
 
@@ -37,16 +39,16 @@ export default function HomeScreen() {
         <View style={styles.ringContainer}>
           <WaterRing currentMl={totalMl} goalMl={goalMl} />
           {reached && (
-            <View style={styles.successBadge}>
+            <GlassCard style={styles.successBadge} intensity={20}>
               <Droplets size={14} color={colors.success} />
               <Text style={styles.successText}>Objectif atteint, bravo !</Text>
-            </View>
+            </GlassCard>
           )}
         </View>
 
-        <QuantityChips selectedQuantity={selectedMl} onSelect={setSelectedMl} />
+        <View style={styles.bottomBlock}>
+          <QuantityChips selectedQuantity={selectedMl} onSelect={setSelectedMl} />
 
-        <View style={styles.ctaContainer}>
           <Pressable
             onPress={() => addIntake(selectedMl)}
             style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}
@@ -64,28 +66,26 @@ export default function HomeScreen() {
           </Pressable>
         </View>
       </SafeAreaView>
-    </LinearGradient>
+    </AppBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  safe: {
-    flex: 1,
-  },
+  safe: { flex: 1 },
   dateText: {
     textAlign: "center",
     fontSize: fontSize.lg,
-    fontWeight: "600",
+    fontWeight: "700",
     color: colors.textPrimary,
     marginTop: spacing.md,
+    textShadowColor: "rgba(0,0,0,0.4)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
   },
   badgeRow: {
     alignItems: "center",
     marginTop: spacing.sm,
-    minHeight: 28,
+    minHeight: 32,
   },
   ringContainer: {
     flex: 1,
@@ -97,24 +97,25 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.xs,
-    backgroundColor: colors.card,
     borderRadius: radius.pill,
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.md,
   },
   successText: {
     fontSize: fontSize.sm,
-    fontWeight: "600",
+    fontWeight: "700",
     color: colors.success,
   },
-  ctaContainer: {
+  bottomBlock: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
-    paddingTop: spacing.lg,
+    paddingTop: spacing.md,
+    gap: spacing.md,
   },
   cta: {
     borderRadius: radius.pill,
     overflow: "hidden",
+    ...shadows.glow,
   },
   ctaPressed: {
     opacity: 0.9,
