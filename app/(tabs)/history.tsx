@@ -3,7 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Droplets, Flame, Trophy } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-
+import { useShallow } from "zustand/react/shallow";
 import { AppBackground } from "../../components/AppBackground";
 import { GlassCard } from "../../components/GlassCard";
 import { colors, fontSize, radius, spacing } from "../../src/constants/theme";
@@ -49,7 +49,7 @@ export default function HistoryScreen() {
   const insets = useSafeAreaInsets();
   const logs = useHydrationStore((s) => s.logs);
   const fallbackGoalMl = useHydrationStore(selectDailyGoalMl);
-  const { best } = useHydrationStore(selectStreak);
+  const { best } = useHydrationStore(useShallow(selectStreak));
 
   const rows = buildDays(logs, fallbackGoalMl);
   const reachedCount = rows.filter((r) => r.reached).length;

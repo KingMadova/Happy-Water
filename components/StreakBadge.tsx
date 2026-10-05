@@ -3,12 +3,14 @@ import { BlurView } from "expo-blur";
 import { Flame } from "lucide-react-native";
 import { useEffect, useRef } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
+import { useShallow } from "zustand/react/shallow";
 
 import { colors, fontSize, radius, shadows, spacing } from "../src/constants/theme";
-import { useHydrationStore, selectStreak } from "../src/store/useHydrationStore";
+import { selectStreak, useHydrationStore } from "../src/store/useHydrationStore";
 
 export function StreakBadge() {
-  const { current, best } = useHydrationStore(selectStreak);
+  // useShallow évite les re-renders infinis en comparant {current, best} en profondeur
+  const { current, best } = useHydrationStore(useShallow(selectStreak));
   const prevCurrent = useRef(current);
   const scale = useRef(new Animated.Value(1)).current;
 
@@ -24,7 +26,6 @@ export function StreakBadge() {
   }, [current, best, scale]);
 
   if (current === 0 && best === 0) {
-    // Pas encore de streak : affichage d'incitation
     return (
       <BlurView intensity={24} tint="dark" style={styles.container}>
         <Flame size={16} color="rgba(255,255,255,0.45)" />
