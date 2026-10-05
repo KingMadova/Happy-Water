@@ -32,7 +32,13 @@
     "plugins": [
       "expo-router",
       "expo-location",
-      "expo-notifications",
+      [
+  "expo-notifications",
+  {
+    "sounds": ["./assets/sounds/water-drop.wav"],
+    "defaultChannel": "hydra-reminders-v2"
+  }
+],
       [
         "expo-splash-screen",
         {

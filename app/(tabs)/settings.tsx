@@ -3,11 +3,12 @@ import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/dat
 import Slider from "@react-native-community/slider";
 import { RotateCcw } from "lucide-react-native";
 import { useState, type ReactNode } from "react";
-import { Platform, Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Platform, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AppBackground } from "../../components/AppBackground";
 import { GlassCard } from "../../components/GlassCard";
+import { PressScale } from "../../components/PressScale";
 import { Stepper } from "../../components/Stepper";
 import { colors, fontSize, radius, spacing } from "../../src/constants/theme";
 import { ensurePermission, rescheduleReminders, sendTestNotification } from "../../src/services/notifications";
@@ -36,6 +37,8 @@ import {
 const FREQUENCIES = [1, 2, 3, 4];
 
 export default function SettingsScreen() {
+  const insets = useSafeAreaInsets();
+
   // ----- Store -----
   const weightKg = useHydrationStore((s) => s.weightKg);
   const setWeightKg = useHydrationStore((s) => s.setWeightKg);
@@ -110,7 +113,10 @@ export default function SettingsScreen() {
   return (
     <AppBackground>
       <SafeAreaView style={styles.safe} edges={["top"]}>
-        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={[styles.scroll, { paddingBottom: 100 + insets.bottom }]}
+          showsVerticalScrollIndicator={false}
+        >
           <Text style={styles.screenTitle}>Paramètres</Text>
 
           {/* ---------- PROFIL ---------- */}
@@ -139,10 +145,10 @@ export default function SettingsScreen() {
             <Text style={styles.bigGoal}>{formatLiters(dailyGoalMl)} / jour</Text>
 
             {manualGoalOverrideMl !== null && (
-              <Pressable style={styles.resetRow} onPress={() => setManualGoalOverrideMl(null)}>
+              <PressScale style={styles.resetRow} onPress={() => setManualGoalOverrideMl(null)}>
                 <RotateCcw size={14} color={colors.glow} />
                 <Text style={styles.resetText}>Réinitialiser au calcul automatique</Text>
-              </Pressable>
+              </PressScale>
             )}
 
             <View style={styles.toggleRow}>
@@ -159,18 +165,15 @@ export default function SettingsScreen() {
               {(["frais", "chaud"] as ManualWeatherMode[]).map((mode) => {
                 const active = !isLive && manualMode === mode;
                 return (
-                  <Pressable
+                  <PressScale
                     key={mode}
                     onPress={() => setManualMode(mode)}
-                    style={[
-                      styles.segment,
-                      active && (mode === "chaud" ? styles.segmentHot : styles.segmentCold),
-                    ]}
+                    style={[styles.segment, active && (mode === "chaud" ? styles.segmentHot : styles.segmentCold)]}
                   >
                     <Text style={[styles.segmentText, active && styles.segmentTextActive]}>
                       {mode === "frais" ? `Frais · ${COEFFICIENT_FRAIS}` : `Chaud · ${COEFFICIENT_CHAUD}`}
                     </Text>
-                  </Pressable>
+                  </PressScale>
                 );
               })}
             </View>
@@ -231,12 +234,18 @@ export default function SettingsScreen() {
             </View>
 
             <View style={styles.timeRow}>
-              <Pressable style={styles.timeButton} onPress={() => setOpenPicker(openPicker === "start" ? null : "start")}>
+              <PressScale
+                style={styles.timeButton}
+                onPress={() => setOpenPicker(openPicker === "start" ? null : "start")}
+              >
                 <Text style={styles.timeButtonText}>Début : {String(startHour).padStart(2, "0")}:00</Text>
-              </Pressable>
-              <Pressable style={styles.timeButton} onPress={() => setOpenPicker(openPicker === "end" ? null : "end")}>
+              </PressScale>
+              <PressScale
+                style={styles.timeButton}
+                onPress={() => setOpenPicker(openPicker === "end" ? null : "end")}
+              >
                 <Text style={styles.timeButtonText}>Fin : {String(endHour).padStart(2, "0")}:00</Text>
-              </Pressable>
+              </PressScale>
             </View>
 
             {openPicker !== null && (
@@ -250,9 +259,9 @@ export default function SettingsScreen() {
                   themeVariant="dark"
                 />
                 {Platform.OS === "ios" && (
-                  <Pressable style={styles.closePicker} onPress={() => setOpenPicker(null)}>
+                  <PressScale style={styles.closePicker} onPress={() => setOpenPicker(null)}>
                     <Text style={styles.closePickerText}>Fermer</Text>
-                  </Pressable>
+                  </PressScale>
                 )}
               </View>
             )}
@@ -262,7 +271,7 @@ export default function SettingsScreen() {
               {FREQUENCIES.map((f) => {
                 const active = frequencyHours === f;
                 return (
-                  <Pressable
+                  <PressScale
                     key={f}
                     onPress={() => updateReminders(() => setFrequencyHours(f))}
                     style={[styles.freqChip, active && styles.freqChipActive]}
@@ -270,7 +279,7 @@ export default function SettingsScreen() {
                     <Text style={[styles.freqChipText, active && styles.freqChipTextActive]}>
                       toutes les {f} h
                     </Text>
-                  </Pressable>
+                  </PressScale>
                 );
               })}
             </View>
@@ -281,17 +290,17 @@ export default function SettingsScreen() {
                 : "Rappels désactivés : aucune notification ne sera planifiée."}
             </Text>
 
-            <Pressable style={styles.testButton} onPress={() => void sendTestNotification()}>
+            <PressScale style={styles.testButton} onPress={() => void sendTestNotification()}>
               <Text style={styles.testButtonText}>🧪 Tester une notification (5 s)</Text>
-            </Pressable>
+            </PressScale>
           </Card>
 
           {/* ---------- ZONE DEV ---------- */}
           <GlassCard style={styles.devCard} intensity={18}>
             <Text style={styles.devTitle}>Zone développeur</Text>
-            <Pressable style={styles.devButton} onPress={resetOnboarding}>
+            <PressScale style={styles.devButton} onPress={resetOnboarding}>
               <Text style={styles.devButtonText}>Revoir l'onboarding</Text>
-            </Pressable>
+            </PressScale>
           </GlassCard>
         </ScrollView>
       </SafeAreaView>
@@ -299,7 +308,6 @@ export default function SettingsScreen() {
   );
 }
 
-// ---------- Sous-composants locaux ----------
 function Card({ title, children }: { title: string; children: ReactNode }) {
   return (
     <GlassCard style={styles.card} strong>
@@ -309,10 +317,9 @@ function Card({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-// ---------- Styles ----------
 const styles = StyleSheet.create({
   safe: { flex: 1 },
-  scroll: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xl },
+  scroll: { paddingHorizontal: spacing.lg, paddingTop: spacing.md },
   screenTitle: {
     fontSize: fontSize.xl,
     fontWeight: "800",
@@ -400,7 +407,14 @@ const styles = StyleSheet.create({
   },
   testButtonText: { fontSize: fontSize.sm, fontWeight: "700", color: colors.glow },
   devCard: { padding: spacing.lg, marginTop: spacing.lg, alignItems: "center" },
-  devTitle: { fontSize: fontSize.sm, fontWeight: "700", color: colors.textTertiary, marginBottom: spacing.md, textTransform: "uppercase", letterSpacing: 1 },
+  devTitle: {
+    fontSize: fontSize.sm,
+    fontWeight: "700",
+    color: colors.textTertiary,
+    marginBottom: spacing.md,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+  },
   devButton: {
     backgroundColor: "rgba(248,113,113,0.15)",
     borderRadius: radius.pill,

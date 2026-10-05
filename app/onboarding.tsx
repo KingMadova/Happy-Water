@@ -1,16 +1,17 @@
 // app/onboarding.tsx
+import { LinearGradient } from "expo-linear-gradient";
+import * as Location from "expo-location";
 import { useRouter } from "expo-router";
 import { ArrowRight, MapPin, ThermometerSun } from "lucide-react-native";
 import { useState } from "react";
-import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import * as Location from "expo-location";
+import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppBackground } from "../components/AppBackground";
 import { GlassCard } from "../components/GlassCard";
+import { PressScale } from "../components/PressScale";
 import { Stepper } from "../components/Stepper";
-import { colors, fontSize, gradients, radius, shadows, spacing } from "../src/constants/theme";
+import { colors, fontSize, radius, shadows, spacing } from "../src/constants/theme";
 import { refreshWeather } from "../src/services/weather";
 import { useHydrationStore } from "../src/store/useHydrationStore";
 import {
@@ -70,14 +71,18 @@ export default function Onboarding() {
           />
         )}
         {step === 3 && (
-          <WeatherStep gpsLoading={gpsLoading} gpsGranted={gpsGranted} requestGps={requestGps} onFinish={finishOnboarding} />
+          <WeatherStep
+            gpsLoading={gpsLoading}
+            gpsGranted={gpsGranted}
+            requestGps={requestGps}
+            onFinish={finishOnboarding}
+          />
         )}
       </SafeAreaView>
     </AppBackground>
   );
 }
 
-// ---------- Indicateur d'étapes ----------
 function StepDots({ step }: { step: number }) {
   return (
     <View style={styles.dots}>
@@ -88,7 +93,6 @@ function StepDots({ step }: { step: number }) {
   );
 }
 
-// ---------- ÉTAPE 1 : Bienvenue ----------
 function WelcomeStep({ onNext }: { onNext: () => void }) {
   return (
     <>
@@ -108,7 +112,6 @@ function WelcomeStep({ onNext }: { onNext: () => void }) {
   );
 }
 
-// ---------- ÉTAPE 2 : Profil ----------
 function ProfileStep({
   weightKg,
   setWeightKg,
@@ -157,7 +160,6 @@ function ProfileStep({
   );
 }
 
-// ---------- ÉTAPE 3 : Météo ----------
 function WeatherStep({
   gpsLoading,
   gpsGranted,
@@ -184,10 +186,10 @@ function WeatherStep({
           </Text>
         </GlassCard>
 
-        <Pressable
+        <PressScale
           onPress={requestGps}
           disabled={gpsLoading}
-          style={({ pressed }) => [styles.gpsButton, pressed && styles.gpsPressed, gpsLoading && styles.gpsDisabled]}
+          style={[styles.gpsButton, gpsLoading && styles.gpsDisabled]}
         >
           {gpsLoading ? (
             <ActivityIndicator color={colors.textOnPrimary} />
@@ -197,9 +199,11 @@ function WeatherStep({
               <Text style={styles.gpsText}>{gpsGranted ? "✓ Localisation activée" : "Activer la localisation"}</Text>
             </>
           )}
-        </Pressable>
+        </PressScale>
 
-        {gpsGranted && <Text style={styles.gpsHint}>Parfait ! Hydra récupérera la météo locale toutes les 3 h.</Text>}
+        {gpsGranted && (
+          <Text style={styles.gpsHint}>Parfait ! Hydra récupérera la météo locale toutes les 3 h.</Text>
+        )}
       </View>
       <View style={styles.footer}>
         <CtaButton label="C'est parti !" onPress={onFinish} />
@@ -208,19 +212,22 @@ function WeatherStep({
   );
 }
 
-// ---------- CTA réutilisable ----------
 function CtaButton({ label, onPress }: { label: string; onPress: () => void }) {
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}>
-      <LinearGradient colors={["#4A90D9", "#2DD4BF"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.ctaGradient}>
+    <PressScale onPress={onPress} style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}>
+      <LinearGradient
+        colors={["#4A90D9", "#2DD4BF"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.ctaGradient}
+      >
         <Text style={styles.ctaText}>{label}</Text>
         <ArrowRight size={20} color={colors.textOnPrimary} />
       </LinearGradient>
-    </Pressable>
+    </PressScale>
   );
 }
 
-// ---------- Styles ----------
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   dots: { flexDirection: "row", justifyContent: "center", gap: spacing.sm, paddingTop: spacing.lg },
@@ -235,8 +242,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: spacing.lg,
-    ...shadows.glow,
     borderRadius: 100,
+    ...shadows.glow,
   },
   dropImage: { width: 190, height: 190 },
   title: {
@@ -280,7 +287,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     marginTop: spacing.md,
   },
-  gpsPressed: { opacity: 0.8 },
   gpsDisabled: { opacity: 0.6 },
   gpsText: { color: colors.textPrimary, fontWeight: "700", fontSize: fontSize.md },
   gpsHint: { fontSize: fontSize.sm, color: colors.success, textAlign: "center", marginTop: spacing.md, fontWeight: "600" },

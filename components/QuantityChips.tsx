@@ -1,9 +1,10 @@
 // components/QuantityChips.tsx
 import { BlurView } from "expo-blur";
-import { Pressable, StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { StyleSheet, Text, View } from "react-native";
 
 import { colors, fontSize, radius, shadows, spacing } from "../src/constants/theme";
+import { PressScale } from "./PressScale";
 
 interface QuantityChipsProps {
   selectedQuantity: number;
@@ -19,15 +20,11 @@ export function QuantityChips({ selectedQuantity, onSelect, disabled = false }: 
       {QUANTITIES.map((qty) => {
         const isActive = selectedQuantity === qty;
         return (
-          <Pressable
+          <PressScale
             key={qty}
             onPress={() => onSelect(qty)}
             disabled={disabled}
-            style={({ pressed }) => [
-              styles.chipWrap,
-              isActive && styles.chipWrapActive,
-              pressed && styles.chipPressed,
-            ]}
+            style={isActive ? styles.chipWrapActive : undefined}
           >
             {isActive ? (
               <LinearGradient
@@ -43,7 +40,7 @@ export function QuantityChips({ selectedQuantity, onSelect, disabled = false }: 
                 <Text style={styles.chipText}>{qty} ml</Text>
               </BlurView>
             )}
-          </Pressable>
+          </PressScale>
         );
       })}
     </View>
@@ -57,15 +54,10 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     flexWrap: "wrap",
   },
-  chipWrap: {
+  chipWrapActive: {
     borderRadius: radius.pill,
     overflow: "hidden",
-  },
-  chipWrapActive: {
     ...shadows.glow,
-  },
-  chipPressed: {
-    opacity: 0.85,
   },
   chipGlass: {
     paddingVertical: spacing.sm + 2,
