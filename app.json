@@ -7,6 +7,10 @@
     "icon": "./assets/icon.png",
     "scheme": "hydra",
     "userInterfaceStyle": "automatic",
+    "androidNavigationBar": {
+      "barStyle": "light-content",
+      "backgroundColor": "#07182F"
+    },
     "ios": {
       "icon": "./assets/icon.png"
     },
@@ -15,10 +19,6 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#EAF6FB"
       },
-      "androidNavigationBar": {
-  "barStyle": "light-content",
-  "backgroundColor": "#07182F"
-},
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
@@ -33,12 +33,12 @@
       "expo-router",
       "expo-location",
       [
-  "expo-notifications",
-  {
-    "sounds": ["./assets/sounds/water-drop.wav"],
-    "defaultChannel": "hydra-reminders-v2"
-  }
-],
+        "expo-notifications",
+        {
+          "sounds": ["./assets/sounds/water_drop.wav"],
+          "defaultChannel": "hydra-reminders-v2"
+        }
+      ],
       [
         "expo-splash-screen",
         {

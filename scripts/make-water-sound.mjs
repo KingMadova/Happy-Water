@@ -51,5 +51,5 @@ buf.writeUInt16LE(1, 22); buf.writeUInt32LE(SR, 24); buf.writeUInt32LE(SR * 2, 2
 buf.writeUInt16LE(2, 32); buf.writeUInt16LE(16, 34);
 buf.write("data", 36); buf.writeUInt32LE(N * 2, 40);
 for (let i = 0; i < N; i++) buf.writeInt16LE(Math.round(out[i] * 32767), 44 + i * 2);
-writeFileSync("assets/sounds/water-drop.wav", buf);
+writeFileSync("assets/sounds/water_drop.wav", buf);
 console.log("✅ assets/sounds/water-drop.wav généré (" + (buf.length / 1024).toFixed(0) + " Ko)");

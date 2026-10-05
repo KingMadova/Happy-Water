@@ -11,7 +11,7 @@ import {
 import { formatLitersCompact, formatSmart } from "../utils/hydration";
 
 const CHANNEL_ID = "hydra-reminders-v2";
-const SOUND_FILE = "water-drop.wav";
+const SOUND_FILE = "water_drop.wav";
 const CATEGORY_REMINDER = "hydra-reminder";
 const ACTION_ADD_250 = "ADD_250";
 const handledResponses = new Set<string>();
