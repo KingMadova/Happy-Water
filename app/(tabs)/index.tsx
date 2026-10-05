@@ -9,6 +9,7 @@ import { AppBackground } from "../../components/AppBackground";
 import { GlassCard } from "../../components/GlassCard";
 import { PressScale } from "../../components/PressScale";
 import { QuantityChips } from "../../components/QuantityChips";
+import { StreakBadge } from "../../components/StreakBadge";
 import { WaterRing } from "../../components/WaterRing";
 import { WeatherBadge } from "../../components/WeatherBadge";
 import { colors, fontSize, gradients, radius, shadows, spacing } from "../../src/constants/theme";
@@ -34,6 +35,9 @@ export default function HomeScreen() {
       <SafeAreaView style={styles.safe} edges={["top"]}>
         <Text style={styles.dateText}>{formatDayFr()}</Text>
 
+        <View style={styles.badgeRow}>
+          <StreakBadge />
+        </View>
         <View style={styles.badgeRow}>
           <WeatherBadge />
         </View>
@@ -95,17 +99,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
   },
   successText: { fontSize: fontSize.sm, fontWeight: "700", color: colors.success },
-  bottomBlock: {
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-    gap: spacing.md,
-  },
+  bottomBlock: { paddingHorizontal: spacing.lg, paddingTop: spacing.md, gap: spacing.md },
   cta: { borderRadius: radius.pill, overflow: "hidden", ...shadows.glow },
   ctaPressed: { opacity: 0.9 },
-  ctaGradient: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: spacing.md + 2,
-  },
+  ctaGradient: { alignItems: "center", justifyContent: "center", paddingVertical: spacing.md + 2 },
   ctaText: { color: colors.textOnPrimary, fontSize: fontSize.xl, fontWeight: "800" },
 });

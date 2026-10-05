@@ -1,6 +1,6 @@
 // app/(tabs)/history.tsx
 import { LinearGradient } from "expo-linear-gradient";
-import { Droplets, Trophy } from "lucide-react-native";
+import { Droplets, Flame, Trophy } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -9,6 +9,7 @@ import { GlassCard } from "../../components/GlassCard";
 import { colors, fontSize, radius, spacing } from "../../src/constants/theme";
 import {
   selectDailyGoalMl,
+  selectStreak,
   useHydrationStore,
   type DayLog,
 } from "../../src/store/useHydrationStore";
@@ -48,6 +49,7 @@ export default function HistoryScreen() {
   const insets = useSafeAreaInsets();
   const logs = useHydrationStore((s) => s.logs);
   const fallbackGoalMl = useHydrationStore(selectDailyGoalMl);
+  const { best } = useHydrationStore(selectStreak);
 
   const rows = buildDays(logs, fallbackGoalMl);
   const reachedCount = rows.filter((r) => r.reached).length;
@@ -63,7 +65,6 @@ export default function HistoryScreen() {
         >
           <Text style={styles.screenTitle}>Historique</Text>
 
-          {/* ---------- RÉCAP 7 JOURS ---------- */}
           <GlassCard style={styles.summaryCard} strong>
             <View style={styles.summaryItem}>
               <Trophy size={22} color={colors.warning} />
@@ -78,9 +79,14 @@ export default function HistoryScreen() {
               <Text style={styles.summaryValue}>{formatLiters(totalWeekMl)}</Text>
               <Text style={styles.summaryLabel}>bus sur 7 jours</Text>
             </View>
+            <View style={styles.summaryDivider} />
+            <View style={styles.summaryItem}>
+              <Flame size={22} color={colors.warning} />
+              <Text style={styles.summaryValue}>{best}</Text>
+              <Text style={styles.summaryLabel}>record de jours</Text>
+            </View>
           </GlassCard>
 
-          {/* ---------- ÉTAT VIDE ---------- */}
           {!hasData && (
             <GlassCard style={styles.emptyCard}>
               <Droplets size={40} color={colors.textTertiary} />
@@ -90,7 +96,6 @@ export default function HistoryScreen() {
             </GlassCard>
           )}
 
-          {/* ---------- BARRES PAR JOUR ---------- */}
           <GlassCard style={styles.daysCard} strong>
             {rows.map((row) => {
               const progress = row.goalMl > 0 ? Math.min(row.totalMl / row.goalMl, 1) : 0;
@@ -142,8 +147,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   summaryItem: { flex: 1, alignItems: "center", gap: spacing.xs },
-  summaryDivider: { width: 1, backgroundColor: "rgba(255,255,255,0.15)", marginHorizontal: spacing.md },
-  summaryValue: { fontSize: fontSize.xl, fontWeight: "800", color: colors.textPrimary },
+  summaryDivider: { width: 1, backgroundColor: "rgba(255,255,255,0.15)", marginHorizontal: spacing.sm },
+  summaryValue: { fontSize: fontSize.lg, fontWeight: "800", color: colors.textPrimary },
   summaryLabel: { fontSize: fontSize.xs, color: colors.textSecondary, textAlign: "center" },
   emptyCard: {
     padding: spacing.xl,
