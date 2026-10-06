@@ -35,20 +35,13 @@
     "react-native-svg": "15.15.4",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.10.1",
-    "sharp": "^0.35.4",
     "zustand": "^5.0.15"
   },
   "devDependencies": {
-    "@babel/plugin-transform-react-jsx-self": "^7.29.7",
-    "@babel/plugin-transform-react-jsx-source": "^7.29.7",
-    "@babel/plugin-transform-regenerator": "^8.0.6",
     "@react-native/babel-preset": "^0.87.1",
     "@react-native/metro-babel-transformer": "^0.87.1",
     "@react-native/metro-config": "^0.87.1",
     "@types/react": "~19.2.2",
-    "babel-plugin-syntax-hermes-parser": "^0.37.0",
-    "hermes-estree": "^0.37.0",
-    "hermes-parser": "^0.37.0",
     "typescript": "~6.0.3"
   },
   "scripts": {
