@@ -93,6 +93,19 @@ function StepDots({ step }: { step: number }) {
   );
 }
 
+function Credits() {
+  return (
+    <View style={styles.credits}>
+      <Text style={styles.creditsText}>
+        Conçu par <Text style={styles.creditsName}>Alvine Yoka</Text>
+      </Text>
+      <Text style={[styles.creditsText, { marginTop: 2 }]}>
+        pour <Text style={styles.creditsCommunity}>Les Conquérants d'une Excellente Vie</Text>
+      </Text>
+    </View>
+  );
+}
+
 function WelcomeStep({ onNext }: { onNext: () => void }) {
   return (
     <>
@@ -106,6 +119,7 @@ function WelcomeStep({ onNext }: { onNext: () => void }) {
         </Text>
       </View>
       <View style={styles.footer}>
+        <Credits />
         <CtaButton label="Commencer" onPress={onNext} />
       </View>
     </>
@@ -154,6 +168,7 @@ function ProfileStep({
         </GlassCard>
       </View>
       <View style={styles.footer}>
+        <Credits />
         <CtaButton label="Continuer" onPress={onNext} />
       </View>
     </>
@@ -206,6 +221,7 @@ function WeatherStep({
         )}
       </View>
       <View style={styles.footer}>
+        <Credits />
         <CtaButton label="C'est parti !" onPress={onFinish} />
       </View>
     </>
@@ -294,4 +310,22 @@ const styles = StyleSheet.create({
   ctaPressed: { opacity: 0.9 },
   ctaGradient: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: spacing.md, gap: spacing.sm },
   ctaText: { color: colors.textOnPrimary, fontSize: fontSize.lg, fontWeight: "800" },
+  credits: {
+    alignItems: "center",
+    marginBottom: spacing.md,
+  },
+  creditsText: {
+    fontSize: fontSize.xs,
+    color: colors.textTertiary,
+    textAlign: "center",
+  },
+  creditsName: {
+    color: colors.textPrimary,
+    fontWeight: "700",
+  },
+  creditsCommunity: {
+    color: colors.glow,
+    fontStyle: "italic",
+    fontWeight: "600",
+  },
 });

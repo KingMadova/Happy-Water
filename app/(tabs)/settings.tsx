@@ -302,6 +302,16 @@ export default function SettingsScreen() {
               <Text style={styles.devButtonText}>Revoir l'onboarding</Text>
             </PressScale>
           </GlassCard>
+
+          {/* ---------- CRÉDITS ---------- */}
+          <GlassCard style={styles.creditsCard} intensity={14}>
+            <Text style={styles.creditsText}>
+              Conçu par <Text style={styles.creditsName}>Alvine Yoka</Text>
+            </Text>
+            <Text style={[styles.creditsText, { marginTop: spacing.xs }]}>
+              pour <Text style={styles.creditsCommunity}>Les Conquérants d'une Excellente Vie</Text>
+            </Text>
+          </GlassCard>
         </ScrollView>
       </SafeAreaView>
     </AppBackground>
@@ -424,4 +434,23 @@ const styles = StyleSheet.create({
     borderColor: "rgba(248,113,113,0.4)",
   },
   devButtonText: { fontSize: fontSize.sm, fontWeight: "700", color: colors.danger },
+  creditsCard: {
+    padding: spacing.lg,
+    alignItems: "center",
+    marginTop: spacing.md,
+  },
+  creditsText: {
+    fontSize: fontSize.sm,
+    color: colors.textTertiary,
+    textAlign: "center",
+  },
+  creditsName: {
+    color: colors.textPrimary,
+    fontWeight: "700",
+  },
+  creditsCommunity: {
+    color: colors.glow,
+    fontStyle: "italic",
+    fontWeight: "600",
+  },
 });

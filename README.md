@@ -139,51 +139,7 @@ Alternative via SSH (plus propre, pas de mot de passe à chaque fois) :
 
 git remote add origin git@github.com:TON_USERNAME/hydra.git
 
-(Requiert d'avoir ajouté ta clé SSH dans GitHub → Settings → SSH and GPG keys)
-🎯 Étape 5 — Vérification
-Va sur ta page GitHub et rafraîchis : tu devrais voir tout ton code, ton README formaté, et l'image de la goutte qui s'affiche directement dans le README (GitHub rend les assets locaux).
-📋 Checklist finale
-.gitignore complet
-Pas de secrets dans le code
-Tout commité (git status clean)
-README.md créé et commité
-Repo créé sur GitHub (sans initialisation)
-Remote ajouté
-Push effectué
 
-# Commandes récap
-git add -A
-git commit -m "docs: add README.md"
-git remote add origin https://github.com/TON_USERNAME/hydra.git
-git branch -M main
-git push -u origin main
-
-
-
-# À la racine, crée LICENSE
-cat > LICENSE << 'EOF'
-MIT License
-
-Copyright (c) 2026 Alvine Yoka
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-EOF
 git add LICENSE
 git commit -m "chore: add MIT license"
 git push
